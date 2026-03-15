@@ -1,0 +1,280 @@
+/* 动画效果 - 增强版 */
+
+/* 基础动画 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-20px); }
+  60% { transform: translateY(-10px); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+  20%, 40%, 60%, 80% { transform: translateX(10px); }
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes heartbeat {
+  0% { transform: scale(1); }
+  14% { transform: scale(1.1); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.1); }
+  70% { transform: scale(1); }
+}
+
+/* 新增动画 */
+
+/* 星星爆发 */
+@keyframes starBurst {
+  0% {
+    transform: translateY(0) scale(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-100px) scale(1.5);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-200px) scale(0.5);
+    opacity: 0;
+  }
+}
+
+/* 向上浮动 */
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) scale(0);
+    opacity: 0;
+  }
+}
+
+/* 爆炸效果 */
+@keyframes explode {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* 彩虹色 */
+@keyframes rainbow {
+  0% { color: #ff6b6b; }
+  14% { color: #ffa502; }
+  28% { color: #ffdd59; }
+  42% { color: #7bed9f; }
+  57% { color: #70a1ff; }
+  71% { color: #5352ed; }
+  85% { color: #a55eea; }
+  100% { color: #ff6b6b; }
+}
+
+/* 闪光效果 */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* 摇摆 */
+@keyframes swing {
+  20% { transform: rotate(15deg); }
+  40% { transform: rotate(-10deg); }
+  60% { transform: rotate(5deg); }
+  80% { transform: rotate(-5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* 波浪 */
+@keyframes wave {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(20deg); }
+  75% { transform: rotate(-20deg); }
+}
+
+/* 弹跳进入 */
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 跳舞 */
+@keyframes dance {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-10px) rotate(-5deg); }
+  50% { transform: translateY(0) rotate(0deg); }
+  75% { transform: translateY(-10px) rotate(5deg); }
+}
+
+/* 应用动画类 */
+.animate-fade-in { animation: fadeIn 0.5s ease; }
+.animate-slide-in { animation: slideIn 0.5s ease; }
+.animate-bounce { animation: bounce 1s ease; }
+.animate-pulse { animation: pulse 1.5s ease infinite; }
+.animate-shake { animation: shake 0.5s ease; }
+.animate-zoom-in { animation: zoomIn 0.3s ease; }
+.animate-float { animation: float 3s ease-in-out infinite; }
+.animate-spin { animation: spin 1s linear infinite; }
+.animate-heartbeat { animation: heartbeat 1.5s ease infinite; }
+.animate-rainbow { animation: rainbow 3s linear infinite; }
+.animate-bounce-in { animation: bounceIn 0.6s ease; }
+.animate-dance { animation: dance 0.5s ease; }
+.animate-wave { animation: wave 0.5s ease; }
+
+/* 延迟 */
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.2s; }
+.delay-3 { animation-delay: 0.3s; }
+.delay-4 { animation-delay: 0.4s; }
+.delay-5 { animation-delay: 0.5s; }
+
+/* 按钮效果 */
+.btn:hover {
+  animation: pulse 0.5s ease;
+  transform: translateY(-2px);
+}
+
+.btn:active {
+  transform: scale(0.95);
+}
+
+/* 卡片效果 */
+.card:hover .card-char {
+  animation: bounce 0.5s ease;
+}
+
+/* 学习卡片效果 */
+.learn-card .char-display {
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.learn-card .char-display:hover {
+  animation: heartbeat 0.5s ease;
+}
+
+.learn-card .char-display:active {
+  animation: wave 0.3s ease;
+}
+
+/* 闪光背景效果 */
+.shimmer-effect {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* 宠物动画 */
+#petBuddy:hover {
+  animation: bounce 0.5s ease;
+}
+
+/* 连击火焰效果 */
+.combo-fire {
+  animation: pulse 0.5s ease infinite;
+}
+
+/* 关卡完成效果 */
+.stage-card.current {
+  animation: pulse 1s ease infinite;
+}
+
+/* 游戏卡片效果 */
+.game-card:hover {
+  transform: translateY(-10px) scale(1.02);
+}
+
+/* 勋章闪烁 */
+.badge-item.earned .badge-icon {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* 触摸反馈 */
+@media (hover: none) {
+  .btn:active,
+  .card:active {
+    transform: scale(0.95);
+    background: var(--primary);
+    color: white;
+  }
+}
+
+/* 过渡 */
+.transition-all {
+  transition: all 0.3s ease;
+}

@@ -1,0 +1,460 @@
+/* 游戏专用样式 */
+
+/* ========== 描红游戏 ========== */
+.tracing-game {
+  text-align: center;
+}
+
+.tracing-header {
+  margin-bottom: 30px;
+}
+
+.tracing-header h2 {
+  font-size: 32px;
+  color: var(--text-dark);
+  margin-bottom: 10px;
+}
+
+.tracing-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+.char-display {
+  background: var(--bg-light);
+  padding: 20px;
+  border-radius: var(--radius);
+}
+
+.reference-char {
+  font-size: 60px;
+  color: var(--text-light);
+  opacity: 0.3;
+}
+
+.canvas-container {
+  position: relative;
+  border: 4px solid var(--primary);
+  border-radius: var(--radius);
+  background: white;
+  box-shadow: var(--shadow);
+}
+
+#tracingCanvas {
+  display: block;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.tracing-controls {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ========== 连连看游戏 ========== */
+.matching-game {
+  text-align: center;
+}
+
+.matching-header {
+  margin-bottom: 30px;
+}
+
+.matching-header h2 {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.matching-board {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  position: relative;
+  padding: 20px;
+  min-height: 400px;
+}
+
+.match-column {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.match-item {
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(135deg, var(--bg-light), white);
+  border: 3px solid var(--primary);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.match-item:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow);
+}
+
+.match-item.selected {
+  border-color: var(--secondary);
+  background: linear-gradient(135deg, #e3f2fd, white);
+  transform: scale(1.1);
+  box-shadow: var(--shadow-lg);
+}
+
+.match-item.matched {
+  border-color: var(--success);
+  background: linear-gradient(135deg, #e8f5e9, white);
+  pointer-events: none;
+}
+
+.match-item.wrong {
+  animation: shake 0.5s ease;
+  border-color: var(--danger);
+  background: linear-gradient(135deg, #ffebee, white);
+}
+
+.char-item {
+  font-size: 48px;
+  font-weight: 600;
+}
+
+.image-item {
+  font-size: 50px;
+}
+
+.match-line {
+  position: absolute;
+  height: 4px;
+  background: var(--success);
+  border-radius: 2px;
+  transform-origin: 0 50%;
+  pointer-events: none;
+  animation: fadeIn 0.3s ease;
+}
+
+.matching-controls {
+  margin-top: 30px;
+}
+
+/* ========== 拖拽游戏 ========== */
+.drag-game {
+  text-align: center;
+}
+
+.drag-header {
+  margin-bottom: 30px;
+}
+
+.drag-header h2 {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.drag-board {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding: 20px;
+}
+
+.drag-items {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.drag-item {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  font-weight: 600;
+  cursor: grab;
+  transition: all 0.3s ease;
+  user-select: none;
+  box-shadow: var(--shadow);
+}
+
+.drag-item:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-lg);
+}
+
+.drag-item.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+}
+
+.drag-item.matched {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.drag-slots {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.drag-slot {
+  width: 100px;
+  height: 100px;
+  background: var(--bg-light);
+  border: 3px dashed var(--text-light);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 50px;
+  transition: all 0.3s ease;
+}
+
+.drag-slot.drag-over {
+  border-color: var(--primary);
+  border-style: solid;
+  background: #fff9e6;
+  transform: scale(1.05);
+}
+
+.drag-slot.matched {
+  border-color: var(--success);
+  border-style: solid;
+  background: linear-gradient(135deg, #e8f5e9, white);
+}
+
+.drag-slot.wrong {
+  border-color: var(--danger);
+  animation: shake 0.5s ease;
+}
+
+.matched-char {
+  font-size: 40px;
+  color: var(--success);
+}
+
+.drag-controls {
+  margin-top: 30px;
+}
+
+/* ========== 听音选字游戏 ========== */
+.listen-game {
+  text-align: center;
+}
+
+.listen-header {
+  margin-bottom: 30px;
+}
+
+.listen-header h2 {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.game-progress {
+  margin-top: 15px;
+  font-size: 20px;
+  color: var(--text-light);
+}
+
+.listen-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+}
+
+.play-sound-btn {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, var(--secondary), #0984e3);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-lg);
+}
+
+.play-sound-btn:hover {
+  transform: scale(1.1);
+}
+
+.play-sound-btn:active {
+  transform: scale(0.95);
+}
+
+.sound-icon {
+  font-size: 48px;
+}
+
+.play-sound-btn span:last-child {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  max-width: 400px;
+}
+
+.option-btn {
+  padding: 30px;
+  border: 3px solid var(--primary);
+  border-radius: var(--radius);
+  background: white;
+  font-size: 36px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.option-btn:hover {
+  transform: scale(1.05);
+  background: var(--bg-light);
+}
+
+.option-btn:disabled {
+  cursor: not-allowed;
+}
+
+.option-btn.correct {
+  background: linear-gradient(135deg, #e8f5e9, white);
+  border-color: var(--success);
+  animation: bounce 0.5s ease;
+}
+
+.option-btn.wrong {
+  background: linear-gradient(135deg, #ffebee, white);
+  border-color: var(--danger);
+  animation: shake 0.5s ease;
+}
+
+.option-number {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.option-chinese {
+  font-size: 18px;
+  color: var(--text-light);
+}
+
+.listen-controls {
+  margin-top: 30px;
+}
+
+/* ========== 响应式游戏样式 ========== */
+@media (max-width: 768px) {
+  .match-item {
+    width: 70px;
+    height: 70px;
+    font-size: 30px;
+  }
+
+  .char-item {
+    font-size: 32px;
+  }
+
+  .image-item {
+    font-size: 35px;
+  }
+
+  .drag-item {
+    width: 60px;
+    height: 60px;
+    font-size: 28px;
+  }
+
+  .drag-slot {
+    width: 80px;
+    height: 80px;
+    font-size: 40px;
+  }
+
+  .play-sound-btn {
+    width: 100px;
+    height: 100px;
+  }
+
+  .sound-icon {
+    font-size: 36px;
+  }
+
+  .option-btn {
+    padding: 20px;
+    font-size: 28px;
+  }
+
+  .options-grid {
+    gap: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .matching-board {
+    flex-direction: column;
+    min-height: auto;
+  }
+
+  .match-column {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .match-item {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+  }
+
+  .char-item {
+    font-size: 28px;
+  }
+
+  .image-item {
+    font-size: 30px;
+  }
+
+  #tracingCanvas {
+    width: 250px;
+    height: 250px;
+  }
+
+  .options-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .option-btn {
+    padding: 15px;
+    font-size: 24px;
+  }
+}
