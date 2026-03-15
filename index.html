@@ -68,6 +68,31 @@
 
     .loading-dot:nth-child(2) { animation-delay: 0.1s; }
     .loading-dot:nth-child(3) { animation-delay: 0.2s; }
+
+    /* 音频解锁按钮 */
+    .audio-unlock-btn {
+      margin-top: 30px;
+      padding: 15px 40px;
+      background: linear-gradient(135deg, #ff9f43, #e17055);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(255, 159, 67, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .audio-unlock-btn:active {
+      transform: scale(0.95);
+    }
+
+    .audio-unlock-btn.success {
+      background: linear-gradient(135deg, #00b894, #00a187);
+    }
   </style>
 </head>
 <body>
@@ -80,6 +105,10 @@
       <div class="loading-dot"></div>
       <div class="loading-dot"></div>
     </div>
+    <button class="audio-unlock-btn" id="audioUnlockBtn">
+      <span>🔊</span>
+      <span>点击开启声音</span>
+    </button>
   </div>
 
   <!-- 主应用 -->
@@ -106,18 +135,46 @@
         .catch(err => console.log('Service Worker 注册失败:', err));
     }
 
-    // 隐藏加载页面
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        document.getElementById('loadingScreen').classList.add('hidden');
-      }, 800);
-    });
+    // 音频解锁按钮
+    const audioBtn = document.getElementById('audioUnlockBtn');
+    let audioUnlocked = false;
 
-    // 点击任意位置解锁音频（移动端）
-    document.addEventListener('click', function initAudio() {
-      if (window.Speech && Speech.audioContext && Speech.audioContext.state === 'suspended') {
-        Speech.audioContext.resume();
+    audioBtn.addEventListener('click', async function unlockAudio() {
+      if (audioUnlocked) return;
+
+      try {
+        // 解锁音频
+        if (window.Speech) {
+          await Speech.unlock();
+          // 测试播放
+          Speech.playSound('star');
+          await Speech.speak('声音已开启', 1.0, 1.2);
+        }
+
+        audioUnlocked = true;
+        audioBtn.classList.add('success');
+        audioBtn.innerHTML = '<span>✓</span><span>声音已开启</span>';
+
+        // 延迟隐藏加载页面
+        setTimeout(() => {
+          document.getElementById('loadingScreen').classList.add('hidden');
+        }, 1000);
+      } catch (e) {
+        console.warn('音频解锁失败:', e);
+        // 即使失败也进入应用
+        setTimeout(() => {
+          document.getElementById('loadingScreen').classList.add('hidden');
+        }, 500);
       }
+    }, { once: true });
+
+    // 备用：点击屏幕任意位置解锁
+    document.addEventListener('click', function() {
+      if (window.Speech) Speech.unlock();
+    }, { once: true });
+
+    document.addEventListener('touchstart', function() {
+      if (window.Speech) Speech.unlock();
     }, { once: true });
   </script>
 </body>

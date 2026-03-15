@@ -1,35 +1,32 @@
-// 语音朗读模块 - 优化版
+// 语音朗读模块 - 兼容移动端优化版
 const Speech = {
   synth: window.speechSynthesis,
   voice: null,
   isSupported: 'speechSynthesis' in window,
   audioContext: null,
+  isUnlocked: false,
 
-  // 音效缓存
-  sounds: {
-    correct: null,
-    wrong: null,
-    star: null,
-    levelUp: null,
-    combo: null
-  },
+  sounds: {},
 
   init() {
+    // 初始化音频上下文
+    try {
+      this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    } catch (e) {
+      console.warn('AudioContext 不支持');
+    }
+
+    // 生成音效
+    this.generateSounds();
+
     if (!this.isSupported) {
       console.warn('当前浏览器不支持语音合成');
       return;
     }
 
-    // 初始化音频上下文
-    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-    // 生成音效
-    this.generateSounds();
-
-    // 等待语音列表加载
+    // 设置中文语音
     const setChineseVoice = () => {
       const voices = this.synth.getVoices();
-      // 优先选择更自然的中文语音
       this.voice = voices.find(v => v.lang.includes('zh-CN') && v.name.includes('Google')) ||
                    voices.find(v => v.lang.includes('zh-CN') && v.name.includes('Microsoft')) ||
                    voices.find(v => v.lang.includes('zh-CN')) ||
@@ -44,35 +41,66 @@ const Speech = {
     }
   },
 
-  // 生成合成音效
-  generateSounds() {
-    // 正确音效 - 上升的愉悦音调
-    this.sounds.correct = this.createTone([523, 659, 784], 0.15, 'sine');
+  // 解锁音频（移动端必须用户交互后调用）
+  async unlock() {
+    if (this.isUnlocked) return true;
 
-    // 错误音效 - 低沉的提示音
-    this.sounds.wrong = this.createTone([200, 180], 0.2, 'triangle');
+    try {
+      // 解锁 AudioContext
+      if (this.audioContext && this.audioContext.state === 'suspended') {
+        await this.audioContext.resume();
+      }
 
-    // 星星音效 - 闪烁效果
-    this.sounds.star = this.createTone([880, 1047, 1319], 0.1, 'sine');
+      // 播放一个静音音效来解锁
+      if (this.audioContext) {
+        const oscillator = this.audioContext.createOscillator();
+        const gainNode = this.audioContext.createGain();
+        gainNode.gain.value = 0.01; // 几乎静音
+        oscillator.connect(gainNode);
+        gainNode.connect(this.audioContext.destination);
+        oscillator.start();
+        oscillator.stop(this.audioContext.currentTime + 0.001);
+      }
 
-    // 升级音效 - 胜利号角
-    this.sounds.levelUp = this.createTone([392, 494, 587, 784], 0.2, 'square');
+      // 测试语音
+      if (this.isSupported) {
+        const test = new SpeechSynthesisUtterance('');
+        test.volume = 0;
+        this.synth.speak(test);
+      }
 
-    // 连击音效 - 快速上升
-    this.sounds.combo = this.createTone([440, 554, 659, 880], 0.08, 'sine');
+      this.isUnlocked = true;
+      console.log('音频已解锁');
+      return true;
+    } catch (e) {
+      console.warn('音频解锁失败:', e);
+      return false;
+    }
   },
 
-  // 创建音调
-  createTone(frequencies, duration, type = 'sine') {
-    return () => {
-      if (!this.audioContext) return;
+  generateSounds() {
+    this.sounds.correct = () => this.playTone([523, 659, 784], 0.15);
+    this.sounds.wrong = () => this.playTone([200, 180], 0.2);
+    this.sounds.star = () => this.playTone([880, 1047, 1319], 0.1);
+    this.sounds.levelUp = () => this.playTone([392, 494, 587, 784], 0.2);
+    this.sounds.combo = () => this.playTone([440, 554, 659, 880], 0.08);
+    this.sounds.click = () => this.playTone([600], 0.05);
+  },
+
+  playTone(frequencies, duration) {
+    if (!this.audioContext) return;
+
+    try {
+      if (this.audioContext.state === 'suspended') {
+        this.audioContext.resume();
+      }
 
       const now = this.audioContext.currentTime;
       frequencies.forEach((freq, i) => {
         const oscillator = this.audioContext.createOscillator();
         const gainNode = this.audioContext.createGain();
 
-        oscillator.type = type;
+        oscillator.type = 'sine';
         oscillator.frequency.setValueAtTime(freq, now + i * duration);
 
         gainNode.gain.setValueAtTime(0.3, now + i * duration);
@@ -84,71 +112,95 @@ const Speech = {
         oscillator.start(now + i * duration);
         oscillator.stop(now + i * duration + duration);
       });
-    };
-  },
-
-  // 播放音效
-  playSound(soundName) {
-    if (this.sounds[soundName]) {
-      // 恢复音频上下文（移动端需要用户交互后）
-      if (this.audioContext && this.audioContext.state === 'suspended') {
-        this.audioContext.resume();
-      }
-      this.sounds[soundName]();
+    } catch (e) {
+      console.warn('播放音效失败:', e);
     }
   },
 
-  speak(text, rate = 0.85, pitch = 1.1) {
-    if (!this.isSupported) return Promise.resolve();
+  playSound(name) {
+    if (this.sounds[name]) {
+      this.sounds[name]();
+    }
+  },
 
-    return new Promise((resolve, reject) => {
-      // 取消之前的语音
-      this.synth.cancel();
+  async speak(text, rate = 0.85, pitch = 1.1) {
+    // 先尝试解锁
+    await this.unlock();
 
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'zh-CN';
-      utterance.rate = rate;      // 稍慢更清晰
-      utterance.pitch = pitch;    // 略高音调更适合儿童
-      utterance.volume = 1;
+    if (!this.isSupported) {
+      this.showSpeechTip();
+      return Promise.resolve();
+    }
 
-      if (this.voice) {
-        utterance.voice = this.voice;
+    return new Promise((resolve) => {
+      try {
+        this.synth.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'zh-CN';
+        utterance.rate = rate;
+        utterance.pitch = pitch;
+        utterance.volume = 1;
+
+        if (this.voice) {
+          utterance.voice = this.voice;
+        }
+
+        utterance.onend = resolve;
+        utterance.onerror = () => {
+          console.warn('语音播放失败');
+          resolve();
+        };
+
+        this.synth.speak(utterance);
+      } catch (e) {
+        console.warn('语音合成错误:', e);
+        resolve();
       }
-
-      utterance.onend = resolve;
-      utterance.onerror = reject;
-
-      this.synth.speak(utterance);
     });
   },
 
-  // 朗读汉字 - 更有感情
+  // 显示语音提示（当语音不可用时）
+  showSpeechTip() {
+    // 只显示一次
+    if (sessionStorage.getItem('speech_tip_shown')) return;
+    sessionStorage.setItem('speech_tip_shown', 'true');
+
+    const tip = document.createElement('div');
+    tip.style.cssText = `
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 25px;
+      font-size: 14px;
+      z-index: 10000;
+      animation: fadeInUp 0.3s ease;
+    `;
+    tip.innerHTML = '💡 当前浏览器可能不支持语音朗读';
+    document.body.appendChild(tip);
+
+    setTimeout(() => {
+      tip.style.opacity = '0';
+      setTimeout(() => tip.remove(), 300);
+    }, 3000);
+  },
+
   speakChar(char) {
-    // 先播放轻快音效
     this.playSound('star');
     return this.speak(char, 0.8, 1.15);
   },
 
-  // 朗读词语
   speakWord(word) {
     return this.speak(word, 0.85, 1.0);
   },
 
-  // 朗读拼音
-  speakPinyin(pinyin) {
-    return this.speak(pinyin, 0.7, 1.2);
-  },
+  async playCorrect(combo = 0) {
+    this.playSound(combo >= 3 ? 'combo' : 'correct');
 
-  // 播放正确反馈 - 多样化鼓励
-  playCorrect(combo = 0) {
-    // 播放音效
-    if (combo >= 3) {
-      this.playSound('combo');
-    } else {
-      this.playSound('correct');
-    }
-
-    // 根据连击数选择不同的鼓励语
     const praises = {
       normal: ['真棒！', '太好了！', '很厉害！', '答对了！'],
       combo3: ['太厉害了！', '三连击！', '继续加油！'],
@@ -170,7 +222,6 @@ const Speech = {
     return this.speak(text, 1.0, 1.3);
   },
 
-  // 播放错误提示 - 温柔鼓励
   playWrong() {
     this.playSound('wrong');
     const encourages = ['再试试看', '加油哦', '没关系', '想一想'];
@@ -178,18 +229,15 @@ const Speech = {
     return this.speak(text, 0.9, 1.0);
   },
 
-  // 播放星星获得音效
   playStar() {
     this.playSound('star');
   },
 
-  // 播放升级音效
   playLevelUp() {
     this.playSound('levelUp');
     return this.speak('升级啦！太棒了！', 1.0, 1.4);
   },
 
-  // 停止朗读
   stop() {
     if (this.isSupported) {
       this.synth.cancel();
@@ -200,3 +248,7 @@ const Speech = {
 // 初始化
 Speech.init();
 window.Speech = Speech;
+
+// 全局点击解锁音频
+document.addEventListener('click', () => Speech.unlock(), { once: true });
+document.addEventListener('touchstart', () => Speech.unlock(), { once: true });
