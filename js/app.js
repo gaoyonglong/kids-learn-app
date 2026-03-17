@@ -68,6 +68,10 @@ const App = {
           <span class="nav-btn-icon">🔢</span>
           <span>学数字</span>
         </button>
+        <button class="nav-btn" data-page="math">
+          <span class="nav-btn-icon">🧮</span>
+          <span>算术</span>
+        </button>
         <button class="nav-btn" data-page="games">
           <span class="nav-btn-icon">🎮</span>
           <span>游戏</span>
@@ -110,6 +114,10 @@ const App = {
         content.innerHTML = this.renderNumbers();
         this.setupNumberEvents();
         break;
+      case 'math':
+        content.innerHTML = this.renderMath();
+        this.setupMathEvents();
+        break;
       case 'games':
         content.innerHTML = this.renderGames();
         this.setupGameEvents();
@@ -124,6 +132,7 @@ const App = {
     const stats = Storage.getStats();
     const charProgress = Levels.getCharProgress();
     const numProgress = Levels.getNumProgress();
+    const mathProgress = Levels.getMathProgress();
 
     return `
       <div class="home-page animate-fade-in">
@@ -158,6 +167,19 @@ const App = {
               已学会 <strong>${stats.learnedNumbers}</strong> / ${stats.totalNumbers} 个数字
             </p>
           </div>
+
+          <div class="progress-card" style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); padding: 25px; border-radius: 20px; cursor: pointer;" onclick="App.navigateTo('math')">
+            <h3 style="font-size: 24px; margin-bottom: 15px;">🧮 数学关卡 ${mathProgress.completedStages}/${mathProgress.totalStages}</h3>
+            <div class="progress-bar" style="height: 15px;">
+              <div class="progress-fill" style="width: ${mathProgress.completedStages / mathProgress.totalStages * 100}%"></div>
+            </div>
+            <p style="font-size: 16px; color: var(--text-light); margin-top: 10px;">
+              ${mathProgress.completedStages < mathProgress.totalStages ? '开始数学运算练习吧！' : '已通关！🎉'}
+            </p>
+            <p style="font-size: 18px; color: var(--success); margin-top: 5px;">
+              20以内加减法练习
+            </p>
+          </div>
         </div>
 
         <!-- 快速开始 -->
@@ -169,6 +191,9 @@ const App = {
             </button>
             <button class="btn btn-accent" onclick="App.startQuickLearn('number')" style="font-size: 20px; padding: 20px 40px;">
               开始学数字
+            </button>
+            <button class="btn btn-secondary" onclick="App.navigateTo('math')" style="font-size: 20px; padding: 20px 40px;">
+              开始算术
             </button>
           </div>
         </div>
@@ -233,6 +258,37 @@ const App = {
       </div>
       <div id="numModal" style="display: none;"></div>
     `;
+  },
+
+  renderMath() {
+    return `
+      <div class="math-page animate-fade-in">
+        <h2 style="font-size: 32px; margin-bottom: 20px;">🧮 数学运算</h2>
+
+        <!-- 关卡进度 -->
+        ${Levels.renderMathStageSelect()}
+
+        <!-- 快速开始 -->
+        <div style="display: flex; gap: 15px; margin: 30px 0; flex-wrap: wrap;">
+          <button class="btn btn-primary" onclick="App.startMathGame(10, 'mixed')">🎯 10以内加减法</button>
+          <button class="btn btn-accent" onclick="App.startMathGame(20, 'mixed')">🎯 20以内加减法</button>
+        </div>
+
+        <div id="mathGameArea"></div>
+      </div>
+    `;
+  },
+
+  setupMathEvents() {
+    // 数学页面事件初始化
+  },
+
+  startMathGame(maxNum, operation) {
+    const area = document.getElementById('mathGameArea');
+    if (area) {
+      MathGame.init(area, operation, maxNum);
+      area.scrollIntoView({ behavior: 'smooth' });
+    }
   },
 
   renderGames() {

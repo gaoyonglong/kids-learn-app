@@ -1,22 +1,35 @@
 // 关卡系统
 const Levels = {
-  // 关卡定义
+  // 汉字关卡定义（300个汉字，10个关卡）
   stages: [
-    { id: 1, name: '启蒙入门', charCount: 10, reward: 50, icon: '🌱' },
-    { id: 2, name: '初识汉字', charCount: 20, reward: 80, icon: '🌿' },
-    { id: 3, name: '识字小兵', charCount: 35, reward: 120, icon: '🌳' },
-    { id: 4, name: '识字达人', charCount: 50, reward: 150, icon: '⭐' },
-    { id: 5, name: '识字能手', charCount: 70, reward: 200, icon: '🌟' },
-    { id: 6, name: '识字高手', charCount: 85, reward: 250, icon: '✨' },
-    { id: 7, name: '识字大师', charCount: 100, reward: 500, icon: '🏆' }
+    { id: 1, name: '启蒙入门', charCount: 30, reward: 50, icon: '🌱' },
+    { id: 2, name: '初识汉字', charCount: 60, reward: 80, icon: '🌿' },
+    { id: 3, name: '识字小兵', charCount: 90, reward: 100, icon: '🌳' },
+    { id: 4, name: '识字达人', charCount: 120, reward: 120, icon: '⭐' },
+    { id: 5, name: '识字能手', charCount: 150, reward: 150, icon: '🌟' },
+    { id: 6, name: '识字高手', charCount: 180, reward: 180, icon: '✨' },
+    { id: 7, name: '识字大师', charCount: 210, reward: 200, icon: '🏆' },
+    { id: 8, name: '识字专家', charCount: 240, reward: 250, icon: '👑' },
+    { id: 9, name: '识字王者', charCount: 270, reward: 300, icon: '💎' },
+    { id: 10, name: '识字天才', charCount: 300, reward: 500, icon: '🎖️' }
   ],
 
-  // 数字关卡
+  // 数字关卡（100个数字，6个关卡）
   numStages: [
-    { id: 1, name: '数一数', numCount: 5, reward: 30, icon: '1️⃣' },
-    { id: 2, name: '认数字', numCount: 10, reward: 50, icon: '🔢' },
-    { id: 3, name: '数数达人', numCount: 15, reward: 80, icon: '🎯' },
-    { id: 4, name: '数字大师', numCount: 20, reward: 100, icon: '🏅' }
+    { id: 1, name: '数一数', numCount: 10, reward: 30, icon: '1️⃣' },
+    { id: 2, name: '认数字', numCount: 25, reward: 50, icon: '🔢' },
+    { id: 3, name: '数数达人', numCount: 50, reward: 80, icon: '🎯' },
+    { id: 4, name: '数字能手', numCount: 75, reward: 100, icon: '🏅' },
+    { id: 5, name: '数字高手', numCount: 90, reward: 120, icon: '🌟' },
+    { id: 6, name: '数字大师', numCount: 100, reward: 150, icon: '🏆' }
+  ],
+
+  // 数学运算关卡（4个关卡）
+  mathStages: [
+    { id: 1, name: '5以内加法', maxNum: 5, operation: 'add', reward: 50, icon: '➕' },
+    { id: 2, name: '10以内加减法', maxNum: 10, operation: 'mixed', reward: 80, icon: '🔢' },
+    { id: 3, name: '20以内加法', maxNum: 20, operation: 'add', reward: 100, icon: '🎯' },
+    { id: 4, name: '20以内混合运算', maxNum: 20, operation: 'mixed', reward: 150, icon: '🏆' }
   ],
 
   // 获取当前关卡进度
@@ -208,6 +221,73 @@ const Levels = {
         </div>
       </div>
     `;
+  },
+
+  // 渲染数学运算关卡选择
+  renderMathStageSelect() {
+    const mathProgress = this.getMathProgress();
+
+    return `
+      <div class="stages-container">
+        <h3 style="font-size: 24px; margin-bottom: 20px;">🧮 数学运算关卡</h3>
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+          ${this.mathStages.map((stage, idx) => {
+            const isUnlocked = idx === 0 || mathProgress.completedStages >= idx;
+            const isCompleted = mathProgress.completedStages > idx;
+
+            return `
+              <div class="stage-card ${isCompleted ? 'completed' : ''}"
+                   style="display: flex; align-items: center; gap: 20px; padding: 20px; border-radius: 15px;
+                          background: ${isCompleted ? 'linear-gradient(135deg, #e8f5e9, #c8e6c9)' :
+                                      isUnlocked ? 'linear-gradient(135deg, #fff9e6, #fff5cc)' : '#f5f5f5'};
+                          border: 3px solid ${isUnlocked && !isCompleted ? 'var(--primary)' : 'transparent'};
+                          opacity: ${!isUnlocked ? 0.6 : 1};
+                          cursor: ${!isUnlocked ? 'not-allowed' : 'pointer'};"
+                   onclick="${isUnlocked ? `App.startMathGame(${stage.maxNum}, '${stage.operation}')` : ''}">
+                <div style="font-size: 48px;">${!isUnlocked ? '🔒' : stage.icon}</div>
+                <div style="flex: 1;">
+                  <div style="font-size: 18px; font-weight: 600;">${stage.name}</div>
+                  <div style="font-size: 14px; color: var(--text-light);">
+                    ${isCompleted ? '已完成 ✓' :
+                      !isUnlocked ? '完成上一关解锁' :
+                      stage.operation === 'add' ? '加法练习' :
+                      stage.operation === 'subtract' ? '减法练习' : '加减混合练习'}
+                  </div>
+                </div>
+                <div style="font-size: 20px; color: var(--warning);">${stage.reward} ⭐</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  },
+
+  // 获取数学运算进度
+  getMathProgress() {
+    const progress = Storage.getProgress();
+    const mathStagesCompleted = progress.mathStagesCompleted || [];
+    return {
+      completedStages: mathStagesCompleted.length,
+      totalStages: this.mathStages.length
+    };
+  },
+
+  // 完成数学关卡
+  completeMathStage(stageId) {
+    const progress = Storage.getProgress();
+    if (!progress.mathStagesCompleted) {
+      progress.mathStagesCompleted = [];
+    }
+    if (!progress.mathStagesCompleted.includes(stageId)) {
+      progress.mathStagesCompleted.push(stageId);
+      Storage.saveProgress(progress);
+
+      const stage = this.mathStages.find(s => s.id === stageId);
+      if (stage) {
+        this.showLevelComplete(stage, 'math');
+      }
+    }
   }
 };
 
